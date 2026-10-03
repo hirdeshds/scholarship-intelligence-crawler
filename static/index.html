@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarship Intelligence Crawler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="navbar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-radar"></i>
+                </div>
+                <div>
+                    <h1>Scholarship Intelligence</h1>
+                    <p class="subtitle">Continuous Verification & Crawling Engine</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="status-indicator">
+                    <span class="pulse-dot"></span>
+                    <span>System Active</span>
+                </div>
+                <button class="btn btn-outline" id="btn-seed" onclick="triggerSeed()">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Seed Data
+                </button>
+                <button class="btn btn-primary" id="btn-crawl" onclick="triggerCrawl()">
+                    <i class="fa-solid fa-bolt"></i> Run Crawler Cycle
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="stats-grid" id="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue"><i class="fa-solid fa-magnifying-glass-location"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total">0</span>
+                        <span class="stat-label">Total Discovered</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-green"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-verified">0</span>
+                        <span class="stat-label">Verified (≥95%)</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-amber"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-review">0</span>
+                        <span class="stat-label">Review Required</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-cyan"><i class="fa-solid fa-award"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-active">0</span>
+                        <span class="stat-label">Active Funding</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-rose"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-expired">0</span>
+                        <span class="stat-label">Expired / Stale</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-purple"><i class="fa-solid fa-timeline"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-updated">0</span>
+                        <span class="stat-label">Recently Updated</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-indigo"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-confidence">0%</span>
+                        <span class="stat-label">Avg Confidence</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="controls-panel">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search by scholarship name, provider, or keyword..." oninput="handleSearch()">
+                </div>
+                
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <span class="filter-label">Status:</span>
+                        <div class="pill-group" id="status-pills">
+                            <button class="pill active" onclick="setStatusFilter('ALL')">All</button>
+                            <button class="pill" onclick="setStatusFilter('VERIFIED')">Verified</button>
+                            <button class="pill" onclick="setStatusFilter('REVIEW_REQUIRED')">Review Required</button>
+                            <button class="pill" onclick="setStatusFilter('EXPIRED')">Expired</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <span class="filter-label">Source Type:</span>
+                        <div class="pill-group" id="source-pills">
+                            <button class="pill active" onclick="setSourceFilter('ALL')">All Sources</button>
+                            <button class="pill" onclick="setSourceFilter('Government')">Government</button>
+                            <button class="pill" onclick="setSourceFilter('Corporate CSR')">Corporate CSR</button>
+                            <button class="pill" onclick="setSourceFilter('Foundation / Trust')">Foundation/Trust</button>
+                            <button class="pill" onclick="setSourceFilter('University')">University</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="table-card">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Scholarship Name</th>
+                                <th>Provider</th>
+                                <th>Source Type</th>
+                                <th>Amount / Benefit</th>
+                                <th>Deadline</th>
+                                <th>Confidence Score</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="modal-backdrop" id="detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modal-title">Scholarship Details</h2>
+                    <p class="modal-provider" id="modal-provider">Provider Name</p>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body" id="modal-body-content">
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
