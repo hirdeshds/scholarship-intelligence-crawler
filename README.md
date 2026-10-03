@@ -125,39 +125,30 @@ scholarship-intelligence-crawler/
 
 ---
 
-## Installation & Operation Guide
+## Deployment Guide
 
-### Prerequisites
-- Python 3.10+
-- SQLite 3
-
-### 1. Environment Setup
-Clone the repository and install core dependencies:
-
-```bash
-git clone https://github.com/organization/scholarship-intelligence-crawler.git
-cd scholarship-intelligence-crawler
-pip install -r requirements.txt
-```
-
-### 2. Initialize & Seed Database
-Initialize SQLite database (`scholarships.db`) and seed initial verified records:
-
-```bash
-python seed_data.py
-```
-
-### 3. Launch Web Server & Dashboard
-Start the production server using Uvicorn:
-
+### Option 1: Local Server (Currently Live)
+The local production Uvicorn server is active:
 ```bash
 python -m uvicorn app:app --host 127.0.0.1 --port 8000
 ```
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
-Open the web interface in your browser:
+### Option 2: Docker Container Deployment
+Build and run the application container using Docker:
+```bash
+# 1. Build the Docker image
+docker build -t scholarship-intelligence-crawler .
+
+# 2. Run the container on port 8000
+docker run -d -p 8000:8000 --name scholarship-crawler scholarship-intelligence-crawler
 ```
-http://127.0.0.1:8000
-```
+Access the application at [http://localhost:8000](http://localhost:8000).
+
+### Option 3: Free Cloud Deployment (Render / Railway)
+The project includes ready-to-use configuration files for PaaS hosting:
+- **Render (`render.yaml`)**: Connect your GitHub repository to Render and create a new **Blueprint**. Render will automatically detect `render.yaml` and deploy your app.
+- **Railway / Heroku (`Procfile`)**: Push the repository to Railway; it will automatically read `Procfile` and launch Uvicorn.
 
 ---
 
